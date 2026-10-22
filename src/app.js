@@ -171,3 +171,6 @@ participantsListe.addEventListener("click", (event) => {
 
   mettreAJourCompteur();
 });
+
+const payout = inputAmount.value * participantsListe.value.length;
+const 
