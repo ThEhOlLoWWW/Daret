@@ -22,6 +22,13 @@ const participantAjouter = document.getElementById("ajouter-participant");
 const participantsCompteur = document.getElementById("participants-compteur");
 const participantsErreur = document.getElementById("participants-erreur");
 
+const resumeCagnotte = document.getElementById("resume-cagnotte");
+const resumeTotalCycle = document.getElementById("resume-total-cycle");
+const resumeNbTours = document.getElementById("resume-nb-tours");
+const resumeDates = document.getElementById("resume-dates");
+const contenuResultat = document.getElementById("contenu-resultat");
+const etatVide = document.getElementById("etat-vide");
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   inputName.value = inputName.value.trim();
@@ -76,6 +83,29 @@ form.addEventListener("submit", (e) => {
     errorDate.classList.remove("hidden");
     return;
   }
+
+  const turns = participantsListe.querySelectorAll(".participant-nom").length;
+  const montantRecue = multiplication(Number(inputAmount.value), turns);
+  const participantTotal = multiplication(Number(inputAmount.value), turns);
+
+  const derniereDate = calculerDerniereDate(
+    turns,
+    inputDate.value,
+    inputPeriodicite.value,
+  );
+
+  resumeCagnotte.textContent = `${montantRecue} MAD`;
+  resumeTotalCycle.textContent = `${participantTotal} MAD`;
+  resumeNbTours.textContent = turns;
+
+  const premiereDate = new Date(`${inputDate.value}T00:00:00`);
+
+  resumeDates.textContent =
+    `${premiereDate.toLocaleDateString("fr-FR")} – ` +
+    `${derniereDate.toLocaleDateString("fr-FR")}`;
+
+  contenuResultat.classList.remove("hidden");
+  etatVide.classList.add("hidden");
 });
 
 function creerParticipant() {
@@ -172,5 +202,22 @@ participantsListe.addEventListener("click", (event) => {
   mettreAJourCompteur();
 });
 
-const payout = inputAmount.value * participantsListe.value.length;
-const 
+function multiplication(a, b) {
+  return a * b;
+}
+
+function calculerDerniereDate(turns, dateDebut, periodicite) {
+  const derniereDate = new Date(dateDebut);
+
+  const intervalles = turns - 1;
+
+  if (periodicite === "hebdomadaire") {
+    derniereDate.setDate(derniereDate.getDate() + intervalles * 7);
+  } else if (periodicite === "quinzaine") {
+    derniereDate.setDate(derniereDate.getDate() + intervalles * 15);
+  } else if (periodicite === "mensuelle") {
+    derniereDate.setMonth(derniereDate.getMonth() + intervalles);
+  }
+
+  return derniereDate;
+}
