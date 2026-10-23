@@ -29,8 +29,11 @@ const resumeDates = document.getElementById("resume-dates");
 const contenuResultat = document.getElementById("contenu-resultat");
 const etatVide = document.getElementById("etat-vide");
 
+const calendrierCorps = document.getElementById("calendrier-corps");
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+
   inputName.value = inputName.value.trim();
 
   if (inputName.value.length < 3) {
@@ -101,11 +104,31 @@ form.addEventListener("submit", (e) => {
   const premiereDate = new Date(`${inputDate.value}T00:00:00`);
 
   resumeDates.textContent =
-    `${premiereDate.toLocaleDateString("fr-FR")} – ` +
+    `${premiereDate.toLocaleDateString("fr-FR")} - ` +
     `${derniereDate.toLocaleDateString("fr-FR")}`;
 
   contenuResultat.classList.remove("hidden");
   etatVide.classList.add("hidden");
+
+  let numeroTour = 1;
+
+  calendrierCorps.textContent = "";
+
+  for (const participantInput of participantsListe.querySelectorAll(
+    ".participant-nom",
+  )) {
+    const valeurs = [
+      String(numeroTour),
+      "Date à calculer",
+      participantInput.value.trim(),
+      `${montantRecue} MAD`,
+      "À venir",
+      "—",
+    ];
+
+    creerLigneCalendrier(valeurs);
+    numeroTour++;
+  }
 });
 
 function creerParticipant() {
@@ -220,4 +243,16 @@ function calculerDerniereDate(turns, dateDebut, periodicite) {
   }
 
   return derniereDate;
+}
+
+function creerLigneCalendrier(valeurs) {
+  const ligne = document.createElement("tr");
+
+  for (const valeur of valeurs) {
+    const cell = document.createElement("td");
+    cell.textContent = valeur;
+    ligne.appendChild(cell);
+  }
+
+  calendrierCorps.appendChild(ligne);
 }
