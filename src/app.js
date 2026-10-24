@@ -31,6 +31,12 @@ const etatVide = document.getElementById("etat-vide");
 
 const calendrierCorps = document.getElementById("calendrier-corps");
 
+const randButton = document.getElementById("tirage-au-sort");
+const originalButton = document.getElementById("ordre-saisie");
+
+let ordreSaisie = [];
+let montantParTour = 0;
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -91,6 +97,14 @@ form.addEventListener("submit", (e) => {
   const montantRecue = multiplication(Number(inputAmount.value), turns);
   const participantTotal = multiplication(Number(inputAmount.value), turns);
 
+  ordreSaisie = [];
+  for (let participantInput of participantsListe.querySelectorAll(
+    ".participant-nom",
+  )) {
+    ordreSaisie.push(participantInput.value.trim());
+  }
+  montantParTour = montantRecue;
+
   const derniereDate = calculerDerniereDate(
     turns,
     inputDate.value,
@@ -110,25 +124,11 @@ form.addEventListener("submit", (e) => {
   contenuResultat.classList.remove("hidden");
   etatVide.classList.add("hidden");
 
-  let numeroTour = 1;
+  genererCalendrier(ordreSaisie, montantParTour);
 
-  calendrierCorps.textContent = "";
-
-  for (const participantInput of participantsListe.querySelectorAll(
-    ".participant-nom",
-  )) {
-    const valeurs = [
-      String(numeroTour),
-      "Date à calculer",
-      participantInput.value.trim(),
-      `${montantRecue} MAD`,
-      "À venir",
-      "—",
-    ];
-
-    creerLigneCalendrier(valeurs);
-    numeroTour++;
-  }
+  console.log("Original:", ordreSaisie);
+  console.log("Shuffled:", melangerParticipants(ordreSaisie));
+  console.log("Still original:", ordreSaisie);
 });
 
 function creerParticipant() {
@@ -256,3 +256,53 @@ function creerLigneCalendrier(valeurs) {
 
   calendrierCorps.appendChild(ligne);
 }
+
+function genererCalendrier(participants, montantRecue) {
+  calendrierCorps.textContent = "";
+
+  let numeroTour = 1;
+
+  for (const nom of participants) {
+    const valeur = [
+      String(numeroTour),
+      "Date à calculer",
+      nom,
+      `${montantRecue}`,
+      "	À venir",
+    ];
+
+    creerLigneCalendrier(valeur);
+    numeroTour++;
+  }
+}
+
+function melangerParticipants(participants) {
+  const melange = participants.slice();
+
+  for (let i = melange.length - 1; i > 0; i--) {
+    const indexAleatoire = Math.floor(Math.random() * (i + 1));
+
+    const temporaire = melange[i];
+    melange[i] = melange[indexAleatoire];
+    melange[indexAleatoire] = temporaire;
+  }
+
+  return melange;
+}
+
+randButton.addEventListener("click", () => {
+  if (ordreSaisie.length === 0) {
+    return;
+  }
+
+  const ordreAleatoire = melangerParticipants(ordreSaisie);
+  genererCalendrier(ordreAleatoire, montantParTour);
+});
+
+originalButton.addEventListener("click", () => {
+  if (ordreSaisie.length === 0) {
+    return;
+  }
+
+  genererCalendrier(ordreSaisie, montantParTour);
+});
