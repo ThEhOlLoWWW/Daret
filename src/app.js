@@ -34,6 +34,16 @@ const calendrierCorps = document.getElementById("calendrier-corps");
 const randButton = document.getElementById("tirage-au-sort");
 const originalButton = document.getElementById("ordre-saisie");
 
+const diag = document.getElementById("detail-tour");
+const detailTitre = document.getElementById("detail-titre");
+const detailDate = document.getElementById("detail-date");
+const detailBeneficiaire = document.getElementById("detail-beneficiaire");
+const detailMontant = document.getElementById("detail-montant");
+const detailContributeurs = document.getElementById("detail-contributeurs");
+const fermerDiag = document.getElementById("detail-fermer");
+
+const resetButton = document.getElementById("reinitialiser");
+
 let ordreSaisie = [];
 let montantParTour = 0;
 
@@ -248,9 +258,21 @@ function calculerDerniereDate(turns, dateDebut, periodicite) {
 function creerLigneCalendrier(valeurs) {
   const ligne = document.createElement("tr");
 
-  for (const valeur of valeurs) {
+  for (let i = 0; i < valeurs.length; i++) {
     const cell = document.createElement("td");
-    cell.textContent = valeur;
+
+    if (i === 2) {
+      const boutonBeneficiaire = document.createElement("button");
+
+      boutonBeneficiaire.type = "button";
+      boutonBeneficiaire.dataset.action = "ouvrir-detail";
+      boutonBeneficiaire.textContent = valeurs[i];
+
+      cell.appendChild(boutonBeneficiaire);
+    } else {
+      cell.textContent = valeurs[i];
+    }
+
     ligne.appendChild(cell);
   }
 
@@ -265,7 +287,7 @@ function genererCalendrier(participants, montantRecue) {
   for (const nom of participants) {
     const valeur = [
       String(numeroTour),
-      "Date à calculer",
+      today,
       nom,
       `${montantRecue}`,
       "	À venir",
@@ -305,4 +327,29 @@ originalButton.addEventListener("click", () => {
   }
 
   genererCalendrier(ordreSaisie, montantParTour);
+});
+
+calendrierCorps.addEventListener("click", (event) => {
+  const bouton = event.target.closest('button[data-action="ouvrir-detail"]');
+  if (!bouton) {
+    return;
+  }
+
+  const ligne = bouton.closest("tr");
+  const cell = ligne.querySelectorAll("td");
+  const numeroTour = cell[0].textContent;
+  const dateTour = cell[1].textContent;
+  const beneficiaire = bouton.textContent;
+  const montant = cell[3].textContent;
+
+  detailTitre.textContent = `Détail du tour ${numeroTour}`;
+  detailDate.textContent = dateTour;
+  detailBeneficiaire.textContent = beneficiaire;
+  detailMontant.textContent = `${montant} MAD`;
+
+  diag.showModal();
+});
+
+fermerDiag.addEventListener("click", () => {
+  diag.close();
 });
