@@ -275,6 +275,15 @@ function creerLigneCalendrier(valeurs) {
 
     ligne.appendChild(cell);
   }
+  const cellAction = document.createElement("td");
+  const boutonStatus = document.createElement("button");
+
+  boutonStatus.type = "button";
+  boutonStatus.dataset.action = "basculer-statut";
+  boutonStatus.textContent = "Marqué comme terminer";
+
+  cellAction.appendChild(boutonStatus);
+  ligne.appendChild(cellAction);
 
   calendrierCorps.appendChild(ligne);
 }
@@ -331,23 +340,35 @@ originalButton.addEventListener("click", () => {
 
 calendrierCorps.addEventListener("click", (event) => {
   const bouton = event.target.closest('button[data-action="ouvrir-detail"]');
-  if (!bouton) {
-    return;
+  if (bouton) {
+    const ligne = bouton.closest("tr");
+    const cell = ligne.querySelectorAll("td");
+    const numeroTour = cell[0].textContent;
+    const dateTour = cell[1].textContent;
+    const beneficiaire = bouton.textContent;
+    const montant = cell[3].textContent;
+
+    detailTitre.textContent = `Détail du tour ${numeroTour}`;
+    detailDate.textContent = dateTour;
+    detailBeneficiaire.textContent = beneficiaire;
+    detailMontant.textContent = `${montant} MAD`;
+
+    diag.showModal();
   }
 
-  const ligne = bouton.closest("tr");
-  const cell = ligne.querySelectorAll("td");
-  const numeroTour = cell[0].textContent;
-  const dateTour = cell[1].textContent;
-  const beneficiaire = bouton.textContent;
-  const montant = cell[3].textContent;
+  const boutonStatut = event.target.closest(
+    'button[data-action="basculer-statut"]',
+  );
+  if (boutonStatut) {
+    const ligne = boutonStatut.closest("tr");
+    const cell = ligne.querySelectorAll("td");
 
-  detailTitre.textContent = `Détail du tour ${numeroTour}`;
-  detailDate.textContent = dateTour;
-  detailBeneficiaire.textContent = beneficiaire;
-  detailMontant.textContent = `${montant} MAD`;
-
-  diag.showModal();
+    if (cell[4].textContent.trim() === "Terminé") {
+      cell[4].textContent = "À venir";
+    } else {
+      cell[4].textContent = "Terminé";
+    }
+  }
 });
 
 fermerDiag.addEventListener("click", () => {
