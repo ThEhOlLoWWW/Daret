@@ -374,3 +374,35 @@ calendrierCorps.addEventListener("click", (event) => {
 fermerDiag.addEventListener("click", () => {
   diag.close();
 });
+
+resetButton.addEventListener("click", () => {
+  form.reset();
+
+  errorName.textContent = "";
+  errorName.classList.add("hidden");
+  errorAmount.textContent = "";
+  errorAmount.classList.add("hidden");
+  errorPeriodicite.textContent = "";
+  errorPeriodicite.classList.add("hidden");
+  errorDate.textContent = "";
+  errorDate.classList.add("hidden");
+  participantsErreur.textContent = "";
+  participantsErreur.classList.add("hidden");
+
+  participantsListe.textContent = "";
+  creerParticipant();
+  creerParticipant();
+  creerParticipant();
+  mettreAJourCompteur();
+
+  ordreSaisie = [];
+  montantParTour = 0;
+  calendrierCorps.textContent = "";
+  resumeCagnotte.textContent = "";
+  resumeTotalCycle.textContent = "";
+  resumeNbTours.textContent = "";
+  resumeDates.textContent = "";
+
+  contenuResultat.classList.add("hidden");
+  etatVide.classList.remove("hidden");
+});
